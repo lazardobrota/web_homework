@@ -11,21 +11,19 @@ public class Main {
     public static void main(String[] args) {
         int len = 8;
         List<Student> students = new ArrayList<>();
-        students.add(new Student("Lazar", 0));
-        students.add(new Student("Petar", 1));
-        students.add(new Student("Mika", 2));
-        students.add(new Student("Zika", 3));
-        students.add(new Student("Anja", 4));
-        students.add(new Student("Nikola", 5));
-        students.add(new Student("Ranko", 6));
-        students.add(new Student("Radojica", 7));
-        students.add(new Student("Sara", 8));
+        students.add(new Student("Lazar"));
+        students.add(new Student("Petar"));
+        students.add(new Student("Mika"));
+        students.add(new Student("Zika"));
+        students.add(new Student("Anja"));
+        students.add(new Student("Nikola"));
+        students.add(new Student("Ranko"));
+        students.add(new Student("Radojica"));
+        students.add(new Student("Sara"));
         List<Student> studentsAssitant = new ArrayList<>();
         List<Student> studentsProf = new ArrayList<>();
         for (int i = 0; i < len; i++) {
-            double d = Math.random();
-            System.out.println(i + " " + d);
-            if (d <= 0.5) {
+            if ( Math.random() <= 0.5) {
                 students.get(i).setAssistant(true);
                 studentsAssitant.add(students.get(i));
             }
@@ -52,7 +50,6 @@ public class Main {
 
         int sum = 0;
         for (int i = 0; i < len; i++) {
-            System.out.println(students.get(i));
             sum += students.get(i).getGrade();
         }
 

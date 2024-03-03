@@ -35,7 +35,7 @@ public class Review implements Runnable {
                     Thread.sleep(Math.round((cameIn + defenseTime) * 1000));
 
                     grade = Math.round((float) Main.getRandomNumber(5, 10));
-                    System.out.println("Thread: " + students.get(i).getName() + " Arrival: " + cameIn + " Prof: Assistant TTC: " + defenseTime + " : " + currentTime + " Score: " + grade + "\n " + students.get(i).getNum() + "-----------");
+                    System.out.println("Thread: " + students.get(i).getName() + " Arrival: " + cameIn + " Prof: Assistant TTC: " + defenseTime + " : " + currentTime + " Score: " + grade);
                     students.get(i).setGrade(grade);
                     currentTime += cameIn + defenseTime;
                     continue;
@@ -56,7 +56,7 @@ public class Review implements Runnable {
 
             executorService.shutdown();
         } catch (InterruptedException | BrokenBarrierException e) {
-            System.out.println("Canceled Thread: " + students.get(i).getName() + " Arrival: " + cameIn + " Prof: Assistant TTC: " + defenseTime + " : " + currentTime + " Score: " + grade + "\n " + students.get(i).getNum() + "-----------");
+            System.out.println("Thread: " + students.get(i).getName() + " Arrival: " + cameIn + " Prof: Assistant TTC: " + defenseTime + " : " + currentTime + " Score: " + grade);
             throw new RuntimeException(e);
         }
     }

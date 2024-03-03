@@ -1,18 +1,15 @@
 public class Student {
 
     private String name;
-    private int num;
     private boolean isAssistant;
 
     private int grade;
 
-    public Student(String name, int num) {
+    public Student(String name) {
         this.name = name;
-        this.num = num;
     }
 
-    public Student(int num, boolean isAssistant) {
-        this.num = num;
+    public Student(boolean isAssistant) {
         this.isAssistant = isAssistant;
     }
 
@@ -20,7 +17,6 @@ public class Student {
     public String toString() {
         return "Student{" +
                 "name='" + name + '\'' +
-                ", num=" + num +
                 ", isAssistant=" + isAssistant +
                 ", grade=" + grade +
                 '}';
@@ -32,14 +28,6 @@ public class Student {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getNum() {
-        return num;
-    }
-
-    public void setNum(int num) {
-        this.num = num;
     }
 
     public boolean isAssistant() {

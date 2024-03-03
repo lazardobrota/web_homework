@@ -28,11 +28,11 @@ public class ProfessorReview implements Runnable {
 
 
             grade = Math.round((float) Main.getRandomNumber(5, 10));
-            System.out.println("Thread: " + student.getName() + " Arrival: " + cameIn + " Prof: Professor TTC: " + defenseTime + " : " + currentTime + " Score: " + grade + "\n " + student.getNum() + "-----------");
+            System.out.println("Thread: " + student.getName() + " Arrival: " + cameIn + " Prof: Professor TTC: " + defenseTime + " : " + currentTime + " Score: " + grade);
             student.setGrade(grade);
 
         } catch (InterruptedException | BrokenBarrierException | TimeoutException e) {
-            System.out.println("Canceled Thread: " + student.getName() + " Arrival: " + cameIn + " Prof: Professor TTC: " + defenseTime + " : " + currentTime + " Score: " + grade + "\n " + student.getNum() + "-----------");
+            System.out.println("Thread: " + student.getName() + " Arrival: " + cameIn + " Prof: Professor TTC: " + defenseTime + " : " + currentTime + " Score: " + grade);
             throw new RuntimeException(e);
         }
     }
