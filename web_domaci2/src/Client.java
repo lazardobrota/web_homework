@@ -1,0 +1,87 @@
+import java.io.*;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Client {
+
+    private static final List<String> uniqueUsernames = new ArrayList<>(); //todo nisu thread-ovi pa ne moze ovde da se cuva, samo prebaci nas server
+    private static final int PORT = 8000;
+
+    private final Socket socket;
+
+    private BufferedReader bufferedReader = null;
+    private PrintWriter printWriter = null;
+
+    public Client(Socket socket) {
+        this.socket = socket;
+    }
+
+
+    private void sendMessage() {
+        try {
+
+            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+            Scanner scanner = new Scanner(System.in);
+            receiveMessage();
+
+            while (socket.isConnected()) {
+                printWriter.println(scanner.nextLine());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            closeClient();
+        }
+    }
+
+    private void receiveMessage() {
+        new Thread(() -> {
+            try {
+                String message;
+                while (socket.isConnected()) {
+                    System.out.println(bufferedReader.readLine());
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            finally {
+                closeClient();
+            }
+        }).start();
+    }
+
+    private void closeClient() {
+        if (printWriter != null)
+            printWriter.close();
+
+        if (bufferedReader != null) {
+            try {
+                bufferedReader.close();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        if (socket != null) {
+            try {
+                socket.close(); //when this is closed it will close socket on ServerThread, same address
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        try {
+            Client client = new Client(new Socket("localhost", PORT));
+            client.sendMessage();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+}
