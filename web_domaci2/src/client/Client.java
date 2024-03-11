@@ -1,10 +1,12 @@
+package client;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Client {
+class Client {
 
     private static final List<String> uniqueUsernames = new ArrayList<>(); //todo nisu thread-ovi pa ne moze ovde da se cuva, samo prebaci nas server
     private static final int PORT = 8000;
@@ -68,7 +70,7 @@ public class Client {
 
         if (socket != null) {
             try {
-                socket.close(); //when this is closed it will close socket on ServerThread, same address
+                socket.close(); //when this is closed it will close socket on server.ServerThread, same address
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }

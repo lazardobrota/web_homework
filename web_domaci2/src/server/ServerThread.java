@@ -1,3 +1,5 @@
+package server;
+
 import java.io.*;
 import java.net.Socket;
 import java.time.LocalDateTime;
@@ -5,7 +7,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 
-public class ServerThread implements Runnable{
+class ServerThread implements Runnable{
 
     private static final List<String> badWords = new CopyOnWriteArrayList<>(List.of("bad", "hello", "google"));
     private static final List<ServerThread> serverThreads = new CopyOnWriteArrayList<>(); //static because it will be shared across threads
@@ -94,7 +96,7 @@ public class ServerThread implements Runnable{
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(LocalDateTime.now()).append(" - ");
         if (isServer)
-            stringBuilder.append("Server: ");
+            stringBuilder.append("server.Server: ");
         else
             stringBuilder.append(clientUsername).append(": ");
 
