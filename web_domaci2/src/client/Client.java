@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 class Client {
 
-    private static final List<String> uniqueUsernames = new ArrayList<>(); //todo nisu thread-ovi pa ne moze ovde da se cuva, samo prebaci nas server
+    private static final List<String> uniqueUsernames = new ArrayList<>();
     private static final int PORT = 8000;
 
     private final Socket socket;
