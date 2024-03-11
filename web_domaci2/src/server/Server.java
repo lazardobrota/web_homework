@@ -23,7 +23,7 @@ class Server {
             }
         }
         catch (IOException e) {
-            e.printStackTrace(); //todo throw new RuntimeException(e); bi trebalo
+            throw new RuntimeException(e); //todo throw new RuntimeException(e); bi trebalo
         }
         finally {
             closeServer();

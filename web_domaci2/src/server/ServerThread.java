@@ -60,7 +60,7 @@ class ServerThread implements Runnable{
                 broadcastMessage(formatMessage(message, false));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         finally {
             closeThread();
@@ -82,12 +82,12 @@ class ServerThread implements Runnable{
 
     private boolean checkIfUnique(String username) {
         synchronized (key) {
-            if (uniqueUsernames.contains(username)) {
+            if (uniqueUsernames.contains(username.toLowerCase())) {
                 printWriter.println(formatMessage("Username already taken, try again", true));
                 return false;
             }
 
-            uniqueUsernames.add(username);
+            uniqueUsernames.add(username.toLowerCase());
             return true;
         }
     }
