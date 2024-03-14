@@ -22,8 +22,8 @@ class Server {
                 serverThread.start();
             }
         }
-        catch (IOException e) {
-            throw new RuntimeException(e); //todo throw new RuntimeException(e); bi trebalo
+        catch (IOException ignored) {
+
         }
         finally {
             closeServer();

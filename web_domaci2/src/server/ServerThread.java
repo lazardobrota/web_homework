@@ -59,8 +59,7 @@ class ServerThread implements Runnable{
 
                 broadcastMessage(formatMessage(message, false));
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ignored) {
         }
         finally {
             closeThread();
