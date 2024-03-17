@@ -34,7 +34,6 @@ class Client {
                     printWriter.println(scanner.nextLine());
             }
         } catch (IOException e) {
-            System.out.println("Close Client send");
             scanner.close();
             closeClient();
         }
@@ -48,7 +47,6 @@ class Client {
                     System.out.println(bufferedReader.readLine());
                 }
             } catch (IOException e) {
-                System.out.println("Close Client recive");
                 closeClient();
             }
         }).start();
@@ -69,7 +67,6 @@ class Client {
         if (socket != null) {
             try {
                 socket.close(); //when this is closed it will close socket on server.ServerThread, same address
-                System.out.println("Catch socket close " + socket.isClosed());
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }

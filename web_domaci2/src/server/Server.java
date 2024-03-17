@@ -23,7 +23,6 @@ class Server {
             }
         }
         catch (IOException e) {
-            System.out.println("Close Server");
             closeServer();
         }
     }
