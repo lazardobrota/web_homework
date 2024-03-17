@@ -59,9 +59,7 @@ class ServerThread implements Runnable{
 
                 broadcastMessage(formatMessage(message, false));
             }
-        } catch (IOException ignored) {
-        }
-        finally {
+        } catch (IOException e) {
             closeThread();
         }
     }
@@ -95,7 +93,7 @@ class ServerThread implements Runnable{
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(LocalDateTime.now()).append(" - ");
         if (isServer)
-            stringBuilder.append("server.Server: ");
+            stringBuilder.append("Server: ");
         else
             stringBuilder.append(clientUsername).append(": ");
 

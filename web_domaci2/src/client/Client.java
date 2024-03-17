@@ -22,20 +22,20 @@ class Client {
 
 
     private void sendMessage() {
+        Scanner scanner = new Scanner(System.in);
         try {
 
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
-            Scanner scanner = new Scanner(System.in);
             receiveMessage();
 
-            while (socket.isConnected()) {
-                printWriter.println(scanner.nextLine());
+            while (!socket.isClosed()) {
+                if (scanner.hasNext())
+                    printWriter.println(scanner.nextLine());
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        finally {
+            System.out.println("Close Client send");
+            scanner.close();
             closeClient();
         }
     }
@@ -44,13 +44,11 @@ class Client {
         new Thread(() -> {
             try {
                 String message;
-                while (socket.isConnected()) {
+                while (!socket.isClosed()) {
                     System.out.println(bufferedReader.readLine());
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            finally {
+                System.out.println("Close Client recive");
                 closeClient();
             }
         }).start();
@@ -71,6 +69,7 @@ class Client {
         if (socket != null) {
             try {
                 socket.close(); //when this is closed it will close socket on server.ServerThread, same address
+                System.out.println("Catch socket close " + socket.isClosed());
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }

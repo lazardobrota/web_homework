@@ -22,10 +22,8 @@ class Server {
                 serverThread.start();
             }
         }
-        catch (IOException ignored) {
-
-        }
-        finally {
+        catch (IOException e) {
+            System.out.println("Close Server");
             closeServer();
         }
     }
