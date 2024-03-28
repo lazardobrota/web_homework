@@ -70,7 +70,7 @@ public class MainServerThread implements Runnable {
                 char[] buffer = new char[contentLen];
                 in.read(buffer);
 
-                createQuote(new String(buffer), cookie);
+                createQuote(new String(buffer).replace("+", " "), cookie);
                 System.out.println("Yooooooooooo: " + new String(buffer));
             }
 
