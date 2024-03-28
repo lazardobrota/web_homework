@@ -1,5 +1,7 @@
 package http;
 
+import com.google.gson.Gson;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -34,7 +36,8 @@ public class HelpServerThread implements Runnable {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 
-            out.println(quotesOfDay.get(index.get()));
+            Gson gson = new Gson();
+            out.println(gson.toJson(quotesOfDay.get(index.get())));
 
             in.close();
             out.close();

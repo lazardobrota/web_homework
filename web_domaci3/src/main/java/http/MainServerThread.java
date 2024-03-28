@@ -1,6 +1,7 @@
 package http;
 
 import app.RequestHandler;
+import com.google.gson.Gson;
 import http.response.Response;
 
 import java.io.*;
@@ -19,7 +20,7 @@ public class MainServerThread implements Runnable {
 
     public static final Map<Cookie, List<Quote>> cookieQuotes = new ConcurrentHashMap<>();
 
-    public static String quoteOfDay = "";
+    public static Quote quoteOfDay;
 
     private BufferedReader in;
     private PrintWriter out;
@@ -118,10 +119,12 @@ public class MainServerThread implements Runnable {
         }
     }
 
-    private String getQuoteOfDay() throws IOException {
+    private Quote getQuoteOfDay() throws IOException {
         Socket s = new Socket("localhost", 8081);
 
+        Gson gson = new Gson();
+
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-        return bufferedReader.readLine();
+        return gson.fromJson(bufferedReader.readLine(), Quote.class);
     }
 }
