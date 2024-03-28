@@ -23,7 +23,6 @@ public class HelpServerThread implements Runnable {
 
     public static AtomicInteger index = new AtomicInteger(0);
 
-    private BufferedReader in;
     private PrintWriter out;
 
     public HelpServerThread(Socket socket) {
@@ -33,13 +32,11 @@ public class HelpServerThread implements Runnable {
     @Override
     public void run() {
         try {
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 
             Gson gson = new Gson();
             out.println(gson.toJson(quotesOfDay.get(index.get())));
 
-            in.close();
             out.close();
             socket.close();
         } catch (IOException e) {
@@ -53,9 +50,6 @@ public class HelpServerThread implements Runnable {
 
     private void closeSocket() {
         try {
-            if (in != null)
-                in.close();
-
             if (out != null)
                 out.close();
 
