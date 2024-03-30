@@ -20,7 +20,6 @@ public class HtmlResponse extends Response {
                 "Content-Type: text/html\r\n\r\n";
         response += html;
 
-        //todo call second server thread for quote of the day
         return response;
     }
 }
