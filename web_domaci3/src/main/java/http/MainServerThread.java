@@ -122,9 +122,21 @@ public class MainServerThread implements Runnable {
     private Quote getQuoteOfDay() throws IOException {
         Socket s = new Socket("localhost", 8081);
 
+        String htmlRequest = "GET /daily-quote HTTP/1.1\r\nHost: localhost:8080\r\n\r\n";
+
+        PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(s.getOutputStream()), true);
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        String requestLine;
+
+        printWriter.println(htmlRequest);
+        do {
+            requestLine = bufferedReader.readLine();
+            System.out.println(requestLine);
+
+        }while (!requestLine.trim().isEmpty());
+
         Gson gson = new Gson();
 
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
         return gson.fromJson(bufferedReader.readLine(), Quote.class);
     }
 }

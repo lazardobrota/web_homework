@@ -50,7 +50,7 @@ public class QuotesController extends Controller{
                 "<!DOCTYPE html>" +
                 "<html>" +
                 "  <head>" +
-                        "<link rel=\"icon\" href=\"data:;base64,=\">" + //satify annoying \favicon call
+                        "<link rel=\"icon\" href=\"data:;base64,=\">" + //satisfy annoying \favicon call
                 "  </head>" +
                     htmlBody.toString() +
                 "</html>";

@@ -1,6 +1,8 @@
 package http;
 
+import app.RequestHandler;
 import com.google.gson.Gson;
+import http.response.Response;
 
 import java.io.*;
 import java.net.Socket;
@@ -23,6 +25,7 @@ public class HelpServerThread implements Runnable {
 
     public static AtomicInteger index = new AtomicInteger(0);
 
+    private BufferedReader in;
     private PrintWriter out;
 
     public HelpServerThread(Socket socket) {
@@ -32,15 +35,41 @@ public class HelpServerThread implements Runnable {
     @Override
     public void run() {
         try {
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 
-            Gson gson = new Gson();
-            out.println(gson.toJson(quotesOfDay.get(index.get())));
+            System.out.println();
+            String requestLine = in.readLine();
+
+            String[] lineSplit = requestLine.split(" ");
+            String method = lineSplit[0]; //get, post, put, ...
+            String path = lineSplit[1];
+
+            do {
+                System.out.println(requestLine);
+                requestLine = in.readLine();
+            }while (!requestLine.trim().isEmpty());
+
+            Request request = new Request(HttpMethod.valueOf(method), path);
+
+            RequestHandler requestHandler = new RequestHandler();
+            Response response = requestHandler.handle(request);
+
+            System.out.println("\nRESPONSE\n");
+            System.out.println(response.getResponseString());
+            out.println(response.getResponseString());
+
+//            out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+//
+//            Gson gson = new Gson();
+//            out.println(gson.toJson(quotesOfDay.get(index.get())));
 
             out.close();
             socket.close();
         } catch (IOException e) {
             closeSocket();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

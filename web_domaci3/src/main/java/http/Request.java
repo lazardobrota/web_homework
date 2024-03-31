@@ -5,12 +5,17 @@ public class Request {
     private final HttpMethod httpMethod;
     private final String path;
 
-    private final Cookie cookie;
+    private Cookie cookie;
 
     public Request(HttpMethod httpMethod, String path, Cookie cookie) {
         this.httpMethod = httpMethod;
         this.path = path;
         this.cookie = cookie;
+    }
+
+    public Request(HttpMethod httpMethod, String path) {
+        this.httpMethod = httpMethod;
+        this.path = path;
     }
 
     public HttpMethod getHttpMethod() {

@@ -13,6 +13,9 @@ public class RequestHandler {
         if (request.getPath().equals("/save-quote") && request.getHttpMethod().equals(HttpMethod.POST)) {
             return (new QuotesController(request)).doPost();
         }
+        if (request.getPath().equals("/daily-quote") && request.getHttpMethod().equals(HttpMethod.GET)) {
+            return (new DailyQuoteController(request)).doGet();
+        }
 
         throw new Exception("Page: " + request.getPath() + ". Method: " + request.getHttpMethod() + " not found!");
     }
