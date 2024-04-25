@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div>
+        <div id="div-posts">
+
+        </div>
+        <br>
+        <br>
+
+        <button id="btn-new-post">New Post</button>
+
+        <div id="div-form" hidden="hidden">
+            <form method="POST" id="add-post" class="form-post">
+                <div>
+                    <label for="post-title">Title</label>
+                    <input type="text" required="required" id="post-title" placeholder="Enter title...">
+                </div>
+
+                <div>
+                    <label for="post-author">Author</label>
+                    <input type="text" required="required" id="post-author" placeholder="Enter author...">
+                </div>
+
+                <div>
+                    <label for="post-content">Content</label>
+                    <textarea id="post-content" required="required" placeholder="Enter content..."></textarea>
+                </div>
+
+                <div>
+                    <button type="submit">Add Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+<style>
+    .form-post {
+        display: flex;
+        gap: 16px;
+        flex-direction: column;
+    }
+
+    #div-posts {
+        display: flex;
+        gap: 16px;
+        flex-direction: column;
+        width: 40%;
+    }
+
+    .div-info {
+        color: gray;
+    }
+
+    .main-div {
+        border-style: solid;
+    }
+
+    .expand-text {
+        color: grey;
+        cursor: pointer;
+    }
+
+    .div-wrapper {
+        max-height: 150px;
+        overflow: hidden;
+        display: inline-block;
+    }
+    .div-wrapper.expand {
+        max-height: 100%;
+    }
+</style>
+
+<script>
+    fetch('http://localhost:8080/api/posts', {
+        method: 'GET'
+    }).then(response => {
+        return response.json()
+    }).then(posts => {
+        for (const post of posts) {
+            addPostElement(post)
+        }
+    }).catch(error => console.log(error))
+
+    function addPostElement(post) {
+        //main post
+        const allPostsDiv = document.getElementById('div-posts');
+        const mainDiv = document.createElement('div');
+        const divWrapper = document.createElement('div');
+        const h3 = document.createElement('h3')
+        const info = document.createElement('p')
+        const text = document.createElement('p')
+        const expand = document.createElement('p')
+
+        mainDiv.className = 'main-div'
+        divWrapper.className = 'div-wrapper'
+        info.className = 'div-info'
+
+        h3.innerText = post.title
+        text.innerText = post.content
+        info.innerText = post.author + ' - ' + post.dateOfPublish
+        expand.innerText = 'Expand'
+        expand.className = 'expand-text'
+
+        expand.addEventListener('click', () => {
+            divWrapper.classList.toggle('expand')
+        })
+        divWrapper.appendChild(h3)
+        divWrapper.appendChild(info)
+        divWrapper.appendChild(text)
+
+        //Header comments
+        const commentHeader = document.createElement('h3')
+        commentHeader.innerText = 'Comments'
+        divWrapper.appendChild(commentHeader)
+
+        //making form
+        const formElement = document.createElement('form')
+        const nameLabel = document.createElement('label');
+        const nameInput = document.createElement('input')
+        const commentLabel = document.createElement('label');
+        const commentTextArea = document.createElement('textarea')
+        const buttonSubmit = document.createElement('button')
+
+        nameLabel.innerText = 'Name'
+        nameInput.required = true
+        commentLabel.innerText = 'Comment'
+        commentTextArea.required = true
+        buttonSubmit.innerText = 'Add Comment'
+        buttonSubmit.type = 'submit'
+
+        formElement.method = 'POST'
+        formElement.className = 'form-post'
+        formElement.appendChild(nameLabel)
+        formElement.appendChild(nameInput)
+        formElement.appendChild(commentLabel)
+        formElement.appendChild(commentTextArea)
+        formElement.appendChild(buttonSubmit)
+
+        formElement.addEventListener('submit', (e) => {
+            e.preventDefault();
+            fetch('http://localhost:8080/api/posts/comment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    postId: post.id,
+                    name: nameInput.value,
+                    comment: commentTextArea.value
+                })
+            }).then(_ => {
+                const nameH = document.createElement('h4')
+                const text = document.createElement('p')
+                const divComment = document.createElement('div')
+                nameH.innerText = nameInput.value;
+                text.innerText = commentTextArea.value;
+                nameInput.value = ''
+                commentTextArea.value = ''
+                divComment.appendChild(nameH)
+                divComment.appendChild(text)
+                divWrapper.insertAdjacentElement('beforeend', divComment)
+            })
+        })
+
+        divWrapper.appendChild(formElement)
+
+        //comments
+        post.comments.forEach((comment) => {
+            const div1 = document.createElement('div')
+            const name = document.createElement('h4')
+            const p1 = document.createElement('p');
+
+            name.innerText = comment.name;
+            p1.innerText = comment.comment;
+            div1.appendChild(name)
+            div1.appendChild(p1)
+            divWrapper.appendChild(div1)
+        })
+
+        mainDiv.appendChild(divWrapper)
+        mainDiv.appendChild(expand)
+        allPostsDiv.appendChild(mainDiv)
+    }
+
+    document.getElementById('btn-new-post').addEventListener('click', (e) => {
+        const divForm = document.getElementById('div-form')
+        const btn = document.getElementById('btn-new-post')
+        btn.hidden = true
+        divForm.hidden = false;
+    })
+
+    document.getElementById("add-post").addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const divForm = document.getElementById('div-form')
+        const btn = document.getElementById('btn-new-post')
+
+        const titleElement = document.getElementById('post-title');
+        const authorElement = document.getElementById('post-author');
+        const contentElement = document.getElementById('post-content');
+
+        const title = titleElement.value;
+        const author = authorElement.value;
+        const content = contentElement.value;
+
+        fetch('http://localhost:8080/api/posts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: title,
+                author: author,
+                content: content
+            })
+        }).then(response => {
+            return response.json()
+        }).then(post => {
+            addPostElement(post)
+            titleElement.value = ''
+            authorElement.value = ''
+            contentElement.value = ''
+            divForm.hidden = true
+            btn.hidden = false
+        })
+    })
+</script>
+</html>
