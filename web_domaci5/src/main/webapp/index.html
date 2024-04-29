@@ -5,7 +5,7 @@
     <title>Title</title>
 </head>
 <body>
-    <div>
+    <div id="main-page">
         <div id="div-posts">
 
         </div>
@@ -37,6 +37,30 @@
             </form>
         </div>
     </div>
+
+    <div id="detail-page" hidden="hidden">
+        <h3 id="title-h3"></h3>
+        <p id="info-p" class="div-info"></p>
+        <p id="text-p" class="overflow"></p>
+        <h4>Comments</h4>
+        <form id="comment-form" method="POST" class="form-post">
+            <label>
+                Name:
+                <input id="name-input" required="required">
+            </label>
+            <label>
+                Comment:
+                <textarea id="comment-ta" required="required"></textarea>
+            </label>
+            <div>
+                <button type="submit">Add Comment</button>
+            </div>
+        </form>
+
+        <div id="all-comments">
+
+        </div>
+    </div>
 </body>
 
 <style>
@@ -57,19 +81,12 @@
         color: gray;
     }
 
-    .main-div {
-        border-style: solid;
-    }
-
-    .expand-text {
-        color: grey;
-        cursor: pointer;
-    }
-
     .div-wrapper {
         max-height: 150px;
         overflow: hidden;
         display: inline-block;
+        border-style: solid;
+        cursor: pointer;
     }
     .div-wrapper.expand {
         max-height: 100%;
@@ -77,6 +94,7 @@
 </style>
 
 <script>
+    //TODO Fix overflow
     fetch('http://localhost:8080/api/posts', {
         method: 'GET'
     }).then(response => {
@@ -88,61 +106,55 @@
     }).catch(error => console.log(error))
 
     function addPostElement(post) {
-        //main post
         const allPostsDiv = document.getElementById('div-posts');
-        const mainDiv = document.createElement('div');
         const divWrapper = document.createElement('div');
         const h3 = document.createElement('h3')
         const info = document.createElement('p')
         const text = document.createElement('p')
-        const expand = document.createElement('p')
 
-        mainDiv.className = 'main-div'
         divWrapper.className = 'div-wrapper'
         info.className = 'div-info'
+        text.className = 'overflow'
 
         h3.innerText = post.title
         text.innerText = post.content
         info.innerText = post.author + ' - ' + post.dateOfPublish
-        expand.innerText = 'Expand'
-        expand.className = 'expand-text'
 
-        expand.addEventListener('click', () => {
-            divWrapper.classList.toggle('expand')
+
+        divWrapper.addEventListener('click', () => {
+            detailScreen(post)
         })
         divWrapper.appendChild(h3)
         divWrapper.appendChild(info)
         divWrapper.appendChild(text)
 
-        //Header comments
-        const commentHeader = document.createElement('h3')
-        commentHeader.innerText = 'Comments'
-        divWrapper.appendChild(commentHeader)
+        allPostsDiv.appendChild(divWrapper)
+    }
+    function detailScreen(post) {
 
-        //making form
-        const formElement = document.createElement('form')
-        const nameLabel = document.createElement('label');
-        const nameInput = document.createElement('input')
-        const commentLabel = document.createElement('label');
-        const commentTextArea = document.createElement('textarea')
-        const buttonSubmit = document.createElement('button')
+        const mainPage = document.getElementById('main-page')
+        const detailPage = document.getElementById('detail-page')
+        mainPage.hidden = true;
+        detailPage.hidden = false;
 
-        nameLabel.innerText = 'Name'
-        nameInput.required = true
-        commentLabel.innerText = 'Comment'
-        commentTextArea.required = true
-        buttonSubmit.innerText = 'Add Comment'
-        buttonSubmit.type = 'submit'
+        const h3 = document.getElementById('title-h3')
+        const info = document.getElementById('info-p')
+        const text = document.getElementById('text-p')
 
-        formElement.method = 'POST'
-        formElement.className = 'form-post'
-        formElement.appendChild(nameLabel)
-        formElement.appendChild(nameInput)
-        formElement.appendChild(commentLabel)
-        formElement.appendChild(commentTextArea)
-        formElement.appendChild(buttonSubmit)
+        h3.innerText = post.title
+        text.innerText = post.content
+        info.innerText = post.author + ' - ' + post.dateOfPublish
 
-        formElement.addEventListener('submit', (e) => {
+        const formElement = document.getElementById('comment-form')
+        const nameInput = document.getElementById('name-input')
+        const commentTextArea = document.getElementById('comment-ta')
+
+        const allComments = document.getElementById('all-comments')
+        allComments.innerHTML = '' //remove children
+
+        //formElement.onsubmit instead od addEventListener
+        //have form with id and call that instead of making new form each time
+        formElement.onsubmit = (e) => {
             e.preventDefault();
             fetch('http://localhost:8080/api/posts/comment', {
                 method: 'POST',
@@ -164,11 +176,9 @@
                 commentTextArea.value = ''
                 divComment.appendChild(nameH)
                 divComment.appendChild(text)
-                divWrapper.insertAdjacentElement('beforeend', divComment)
+                allComments.appendChild(divComment)
             })
-        })
-
-        divWrapper.appendChild(formElement)
+        }
 
         //comments
         post.comments.forEach((comment) => {
@@ -180,12 +190,8 @@
             p1.innerText = comment.comment;
             div1.appendChild(name)
             div1.appendChild(p1)
-            divWrapper.appendChild(div1)
+            allComments.appendChild(div1)
         })
-
-        mainDiv.appendChild(divWrapper)
-        mainDiv.appendChild(expand)
-        allPostsDiv.appendChild(mainDiv)
     }
 
     document.getElementById('btn-new-post').addEventListener('click', (e) => {
