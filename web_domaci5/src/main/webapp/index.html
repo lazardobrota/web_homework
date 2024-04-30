@@ -94,7 +94,6 @@
 </style>
 
 <script>
-    //TODO Fix overflow
     fetch('http://localhost:8080/api/posts', {
         method: 'GET'
     }).then(response => {
@@ -152,8 +151,6 @@
         const allComments = document.getElementById('all-comments')
         allComments.innerHTML = '' //remove children
 
-        //formElement.onsubmit instead od addEventListener
-        //have form with id and call that instead of making new form each time
         formElement.onsubmit = (e) => {
             e.preventDefault();
             fetch('http://localhost:8080/api/posts/comment', {
@@ -180,7 +177,6 @@
             })
         }
 
-        //comments
         post.comments.forEach((comment) => {
             const div1 = document.createElement('div')
             const name = document.createElement('h4')
@@ -195,6 +191,7 @@
     }
 
     document.getElementById('btn-new-post').addEventListener('click', (e) => {
+        e.preventDefault();
         const divForm = document.getElementById('div-form')
         const btn = document.getElementById('btn-new-post')
         btn.hidden = true
@@ -202,7 +199,7 @@
     })
 
     document.getElementById("add-post").addEventListener('submit', (e) => {
-        e.preventDefault();
+        e.preventDefault(); //page cant refresh
 
         const divForm = document.getElementById('div-form')
         const btn = document.getElementById('btn-new-post')
