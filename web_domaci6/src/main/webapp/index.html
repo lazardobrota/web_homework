@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <div id="login-div" hidden="hidden">
+        <form id="login-form" class="form-post" method="POST">
+
+            <label id="login-error-label" style="color: red"></label>
+            <label>
+                Username:
+                <input required="required" id="login-username-input">
+            </label>
+            <label>
+                Password:
+                <input type="password" required="required" id="login-pass-input" pa>
+            </label>
+
+            <div>
+                <button type="submit">Login</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="main-page">
+        <div id="div-posts">
+
+        </div>
+        <br>
+        <br>
+
+        <button id="btn-new-post">New Post</button>
+
+        <div id="div-form" hidden="hidden">
+            <form method="POST" id="add-post" class="form-post">
+                <div>
+                    <label for="post-title">Title</label>
+                    <input type="text" required="required" id="post-title" placeholder="Enter title...">
+                </div>
+
+                <div>
+                    <label for="post-author">Author</label>
+                    <input type="text" required="required" id="post-author" placeholder="Enter author...">
+                </div>
+
+                <div>
+                    <label for="post-content">Content</label>
+                    <textarea id="post-content" required="required" placeholder="Enter content..."></textarea>
+                </div>
+
+                <div>
+                    <button type="submit">Add Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="detail-page" hidden="hidden">
+        <h3 id="title-h3"></h3>
+        <p id="info-p" class="div-info"></p>
+        <p id="text-p" class="overflow"></p>
+        <h4>Comments</h4>
+        <form id="comment-form" method="POST" class="form-post">
+            <label>
+                Name:
+                <input id="name-input" required="required">
+            </label>
+            <label>
+                Comment:
+                <textarea id="comment-ta" required="required"></textarea>
+            </label>
+            <div>
+                <button type="submit">Add Comment</button>
+            </div>
+        </form>
+
+        <div id="all-comments">
+
+        </div>
+    </div>
+</body>
+
+<style>
+    .form-post {
+        display: flex;
+        gap: 16px;
+        flex-direction: column;
+    }
+
+    #div-posts {
+        display: flex;
+        gap: 16px;
+        flex-direction: column;
+        width: 40%;
+    }
+
+    .div-info {
+        color: gray;
+    }
+
+    .div-wrapper {
+        max-height: 150px;
+        overflow: hidden;
+        display: inline-block;
+        border-style: solid;
+        cursor: pointer;
+    }
+    .div-wrapper.expand {
+        max-height: 100%;
+    }
+</style>
+
+<script>
+    let jwtCookie = localStorage.getItem('jwtCookie')
+
+    if (jwtCookie !== null)
+        getAllPosts();
+    else
+        loginPage(401)
+
+    function getAllPosts() {
+        fetch('http://localhost:8080/api/posts', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + jwtCookie
+            }
+        }).then(response => {
+            if (!loginPage(response.status))
+                return response.json()
+            throw Error("Authorization Error")
+        }).then(posts => {
+            for (const post of posts) {
+                addPostElement(post)
+            }
+        })
+    }
+
+    function addPostElement(post) {
+        const allPostsDiv = document.getElementById('div-posts');
+        const divWrapper = document.createElement('div');
+        const h3 = document.createElement('h3')
+        const info = document.createElement('p')
+        const text = document.createElement('p')
+
+        divWrapper.className = 'div-wrapper'
+        info.className = 'div-info'
+        text.className = 'overflow'
+
+        h3.innerText = post.title
+        text.innerText = post.content
+        info.innerText = post.author + ' - ' + post.dateOfPublish
+
+
+        divWrapper.addEventListener('click', () => {
+            fetch("http://localhost:8080/api/posts/" + post.id, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + jwtCookie
+                }
+            }).then(response => {
+                if (!loginPage(response.status))
+                    return response.json()
+                throw Error("Authorization Error")
+            }).then(post => {
+                detailScreen(post)
+            })
+        })
+        divWrapper.appendChild(h3)
+        divWrapper.appendChild(info)
+        divWrapper.appendChild(text)
+
+        allPostsDiv.appendChild(divWrapper)
+    }
+    function detailScreen(post) {
+
+
+        const mainPage = document.getElementById('main-page')
+        const detailPage = document.getElementById('detail-page')
+        mainPage.hidden = true;
+        detailPage.hidden = false;
+
+        const h3 = document.getElementById('title-h3')
+        const info = document.getElementById('info-p')
+        const text = document.getElementById('text-p')
+
+        h3.innerText = post.title
+        text.innerText = post.content
+        info.innerText = post.author + ' - ' + post.dateOfPublish
+
+        const formElement = document.getElementById('comment-form')
+        const nameInput = document.getElementById('name-input')
+        const commentTextArea = document.getElementById('comment-ta')
+
+        const allComments = document.getElementById('all-comments')
+        allComments.innerHTML = '' //remove children
+
+        formElement.onsubmit = (e) => {
+            e.preventDefault();
+            fetch('http://localhost:8080/api/posts/comment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + jwtCookie
+                },
+                body: JSON.stringify({
+                    postId: post.id,
+                    name: nameInput.value,
+                    comment: commentTextArea.value
+                })
+            }).then(response => {
+                if (loginPage(response.status))
+                    return;
+                const nameH = document.createElement('h4')
+                const text = document.createElement('p')
+                const divComment = document.createElement('div')
+                nameH.innerText = nameInput.value;
+                text.innerText = commentTextArea.value;
+                nameInput.value = ''
+                commentTextArea.value = ''
+                divComment.appendChild(nameH)
+                divComment.appendChild(text)
+                allComments.appendChild(divComment)
+            })
+        }
+
+        post.comments.forEach((comment) => {
+            const div1 = document.createElement('div')
+            const name = document.createElement('h4')
+            const p1 = document.createElement('p');
+
+            name.innerText = comment.name;
+            p1.innerText = comment.comment;
+            div1.appendChild(name)
+            div1.appendChild(p1)
+            allComments.appendChild(div1)
+        })
+    }
+
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById('login-username-input').value
+        const password = document.getElementById('login-pass-input').value
+
+        fetch('http://localhost:8080/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        }).then(response => {
+            if (response.status !== 422)
+                return response.json();
+
+            const label = document.getElementById('login-error-label')
+            label.innerText = 'invalid username or password'
+            throw Error("Authorization Error")
+        }).then(jwt => {
+            jwtCookie = jwt.jwt
+            localStorage.setItem('jwtCookie', jwtCookie)
+            const loginDiv = document.getElementById('login-div')
+            const mainDiv = document.getElementById('main-page')
+
+            loginDiv.hidden = true
+            mainDiv.hidden = false
+            getAllPosts();
+        })
+    })
+
+    document.getElementById('btn-new-post').addEventListener('click', (e) => {
+        e.preventDefault();
+        const divForm = document.getElementById('div-form')
+        const btn = document.getElementById('btn-new-post')
+        btn.hidden = true
+        divForm.hidden = false;
+    })
+
+    document.getElementById("add-post").addEventListener('submit', (e) => {
+        e.preventDefault(); //page cant refresh
+
+        const divForm = document.getElementById('div-form')
+        const btn = document.getElementById('btn-new-post')
+
+        const titleElement = document.getElementById('post-title');
+        const authorElement = document.getElementById('post-author');
+        const contentElement = document.getElementById('post-content');
+
+        const title = titleElement.value;
+        const author = authorElement.value;
+        const content = contentElement.value;
+
+        fetch('http://localhost:8080/api/posts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + jwtCookie
+            },
+            body: JSON.stringify({
+                title: title,
+                author: author,
+                content: content
+            })
+        }).then(response => {
+            if (!loginPage(response.status))
+                return response.json()
+        }).then(post => {
+            addPostElement(post)
+            titleElement.value = ''
+            authorElement.value = ''
+            contentElement.value = ''
+            divForm.hidden = true
+            btn.hidden = false
+        })
+    })
+
+    function loginPage(status) {
+        if (status !== 401)
+            return false;
+
+        const loginDiv = document.getElementById('login-div')
+        const mainDiv = document.getElementById('main-page')
+        const detailsDiv = document.getElementById('detail-page')
+
+        loginDiv.hidden = false
+        mainDiv.hidden = true
+        detailsDiv.hidden = true;
+        return true;
+    }
+</script>
+</html>
