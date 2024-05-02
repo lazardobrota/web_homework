@@ -115,11 +115,10 @@
 
 <script>
     let jwtCookie = localStorage.getItem('jwtCookie')
+    let usernameG = localStorage.getItem('username')
 
-    if (jwtCookie !== null)
-        getAllPosts();
-    else
-        loginPage(401)
+    usernameG = usernameG === null ? '' : usernameG
+    jwtCookie !== null ? getAllPosts() : loginPage(401)
 
     function getAllPosts() {
         fetch('http://localhost:8080/api/posts', {
@@ -193,8 +192,9 @@
         const formElement = document.getElementById('comment-form')
         const nameInput = document.getElementById('name-input')
         const commentTextArea = document.getElementById('comment-ta')
-
         const allComments = document.getElementById('all-comments')
+
+        nameInput.value = usernameG
         allComments.innerHTML = '' //remove children
 
         formElement.onsubmit = (e) => {
@@ -218,7 +218,7 @@
                 const divComment = document.createElement('div')
                 nameH.innerText = nameInput.value;
                 text.innerText = commentTextArea.value;
-                nameInput.value = ''
+                nameInput.value = usernameG
                 commentTextArea.value = ''
                 divComment.appendChild(nameH)
                 divComment.appendChild(text)
@@ -264,6 +264,7 @@
         }).then(jwt => {
             jwtCookie = jwt.jwt
             localStorage.setItem('jwtCookie', jwtCookie)
+            localStorage.setItem('username', document.getElementById('login-username-input').value)
             const loginDiv = document.getElementById('login-div')
             const mainDiv = document.getElementById('main-page')
 
@@ -277,8 +278,10 @@
         e.preventDefault();
         const divForm = document.getElementById('div-form')
         const btn = document.getElementById('btn-new-post')
+        const author = document.getElementById('post-author')
         btn.hidden = true
         divForm.hidden = false;
+        author.value = usernameG
     })
 
     document.getElementById("add-post").addEventListener('submit', (e) => {
@@ -312,7 +315,7 @@
         }).then(post => {
             addPostElement(post)
             titleElement.value = ''
-            authorElement.value = ''
+            authorElement.value = usernameG
             contentElement.value = ''
             divForm.hidden = true
             btn.hidden = false
