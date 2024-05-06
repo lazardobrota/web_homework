@@ -47,5 +47,5 @@ public class MySqlRepo {
     private int getPort() {return 3306;}
     private String getDatabaseName() {return "schema_post";}
     private String getUsername() {return "root";}
-    private String getPass() {return "&zdravoHi007!";} //todo hash this password
+    private String getPass() {return Pass.pass;}
 }
